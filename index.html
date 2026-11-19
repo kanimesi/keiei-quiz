@@ -183,6 +183,7 @@
       .controls-2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
       .btn.small{padding:10px 6px;font-size:13px;min-height:44px;border-radius:12px}
       .btn.small.active{outline:2px solid var(--accent);outline-offset:1px}
+      .backup-msg{margin-top:6px;text-align:center;font-size:12px;color:var(--muted);min-height:1.2em}
 
       /* done state */
       .done{display:none;text-align:center;padding:28px 10px 10px}
@@ -392,6 +393,12 @@
         <button class="btn small" type="button" id="reshuffleBtn">並び替え</button>
         <button class="btn small" type="button" id="resetBtn">リセット</button>
       </div>
+      <div class="controls-2">
+        <button class="btn small" type="button" id="backupExportBtn">成績を書き出す（バックアップ）</button>
+        <button class="btn small" type="button" id="backupImportBtn">成績を読み込む</button>
+        <input type="file" id="backupImportFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="backup-msg" id="backupMsg" aria-live="polite"></div>
 
       <p class="footer">
         ファイナンス編（コンパクトサマリー1）は全8章・351問を収録しました。経営管理編は第9章・320問、第10章・500問、第11章・206問、第12章・114問、第13章・146問、第14章・154問、第15章・60問、第16章・20問、第17章・355問、第18章・342問、第19章・83問と第20章・160問を収録し、全2,811問になりました。4,000問に向けて細分化を進めています。<br>
@@ -480,52 +487,52 @@
         {id:"keiei1-ch2-002",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"定義・穴埋め",question:"リスク分散効果（ポートフォリオ効果）とは何か。",answer:"相関係数が1よりも小さいとき、資産の組み合わせによりポートフォリオの標準偏差が各金融資産の標準偏差の加重平均値よりも小さくなる効果",importance:"A",source_page:"本編 p.46",note:"リスク分散効果は相関係数が1より小さいときに生じ、ポートフォリオの標準偏差を小さくする。"},
         {id:"keiei1-ch2-003",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"判定",question:"ポートフォリオの期待収益率は、相関係数の値にかかわらずどうなるか。",answer:"常に2つの証券の期待収益率の加重平均値になる（標準偏差と違い、相関係数の影響を受けない）",importance:"A",source_page:"本編 p.46",note:"ポートフォリオの期待収益率は相関係数にかかわらず常に加重平均値となり、標準偏差とは異なるとされる。"},
         {id:"keiei1-ch2-004",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"定義・穴埋め",question:"システマティック・リスクとは何か。",answer:"共通的な経済的要因に起因し、市場ポートフォリオと連動するリスク（組織的リスク・市場リスクとも呼ばれる。例：景気の変動）",importance:"A",source_page:"本編 p.52",note:"システマティック・リスクは市場ポートフォリオと連動するリスクで、分散してもゼロにはならないとされる。"},
-        {id:"keiei1-ch2-005",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"定義・穴埋め",question:"アンシステマティック・リスクとは何か。",answer:"それぞれ独立なリスク要因に起因し、市場ポートフォリオと連動しないリスク（非組織的リスク・個別リスクとも呼ばれる。例：個々の企業の業績の良し悪し）",importance:"A",source_page:"本編 p.52"},
-        {id:"keiei1-ch2-006",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"リスクの市場価格とは何か。",answer:"市場ポートフォリオのリスクプレミアムを市場ポートフォリオのリスクで除したもの（リスク1単位あたりのリスクプレミアム。資本市場線の傾きに相当する）",importance:"B",source_page:"本編 p.52"},
-        {id:"keiei1-ch2-007",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"理論・学者",question:"CAPMとはどのようなモデルか。",answer:"個別証券の期待収益率を「β」という指標の一次関数として表すモデル（資本資産評価モデル）。その一次関数は証券市場線（SML）と呼ばれる",importance:"A",source_page:"本編 p.53"},
-        {id:"keiei1-ch2-008",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"β（ベータ）は何を表す指標か。",answer:"市場ポートフォリオのシステマティック・リスクを1としたときの、個別証券のシステマティック・リスク（市場ポートフォリオの収益率と個別証券の収益率との連動性を表す）",importance:"A",source_page:"本編 p.53"},
-        {id:"keiei1-ch2-009",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"公式",question:"証券市場線（SML）の式：個別証券の均衡期待収益率E(Ri)の公式は？",answer:"E(Ri)＝rf＋β×（E(Rm)－rf）",importance:"A",source_page:"本編 p.53"},
-        {id:"keiei1-ch2-010",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"判定",question:"資本市場線（CML）を使って個別証券の理論的な期待収益率を算定できるか。",answer:"算定できない。資本市場線は市場均衡下の有効フロンティア（効率的ポートフォリオ）を示すもので、個別証券の理論的期待収益率には証券市場線を用いる",importance:"A",source_page:"本編 p.54"},
-        {id:"keiei1-ch2-011",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"理論・学者",question:"市場の効率性を利用可能な情報のレベルに応じて3段階（ウィーク／セミストロング／ストロングフォーム）に分類した学者は誰か。",answer:"ユージン・ファマ",importance:"A",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-012",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"セミストロングフォーム（準強度の効率性）とはどのような市場か。",answer:"いかなる投資家も、公開されている情報を使って超過利益を得ることができない市場（既に公開された情報は素早く適切に株価に反映される）",importance:"A",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-013",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"最終利回りとは何か。",answer:"債券の将来キャッシュ・フローと現在価値（購入価格）を一致させる単一の割引率（IRR）",importance:"A",source_page:"本編 p.63"},
-        {id:"keiei1-ch2-014",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"デュレーション（マコーレーデュレーション）とは何か。",answer:"最終利回りが変化したときに債券価格が変化する程度を示す指標であり、債券投資の平均回収期間を示す",importance:"A",source_page:"本編 p.66"},
-        {id:"keiei1-ch2-015",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"正規分布とは何か。",answer:"期待値（平均値）を中心とした左右対称の確率分布のこと",importance:"C+",source_page:"本編 p.44"},
-        {id:"keiei1-ch2-016",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"平均・分散アプローチとは、どのようなアプローチか。",answer:"投資家を「リスクとリターンという2つの要素のみに基づいて意思決定する存在」と捉えるアプローチ",importance:"B",source_page:"本編 p.44"},
-        {id:"keiei1-ch2-017",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"期待効用理論とは何か。",answer:"投資家の期待効用（満足度）を最大化させるための意思決定の方法",importance:"B",source_page:"本編 p.44"},
-        {id:"keiei1-ch2-018",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"無差別曲線とは何か。リスク回避的投資家の場合の形状と、位置・傾きの意味も答えよ。",answer:"投資家に同じ効用を与えるリスクとリターンの組み合わせの軌跡。リスク回避的投資家を前提とすると右上がりで一般的に下に凸となり、左上方に位置する無差別曲線ほど高い効用を示す。また、リスク回避度が高い投資家ほど傾きが急になる",importance:"B",source_page:"本編 p.44"},
-        {id:"keiei1-ch2-019",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"公式",question:"ポートフォリオのリターン（期待収益率）は、どのように算定するか。",answer:"ポートフォリオを構成する各証券の期待収益率を投資比率で加重平均した値（投資比率は合計が1となる比率を用いる）",importance:"A",source_page:"本編 p.45"},
-        {id:"keiei1-ch2-020",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"定義・穴埋め",question:"ポートフォリオの標準偏差が、個々の証券の標準偏差の単純な加重平均とはならないのはなぜか。",answer:"各証券によって収益の変動の方向性が異なるため。個々の株式の収益の変動の方向性（相関）を考慮して算定する必要がある",importance:"A",source_page:"本編 p.45"},
-        {id:"keiei1-ch2-021",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"分類",question:"相関係数ρが1、0、－1のとき、それぞれ2つの証券の収益率はどのような関係にあるか。",answer:"ρ＝1は2つの証券が同じ動きをする（完全相関）、ρ＝0は全く無関連、ρ＝－1は正反対の動きをする（完全逆相関）",importance:"A",source_page:"本編 p.45"},
-        {id:"keiei1-ch2-022",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論（Key Word）",type:"定義・穴埋め",question:"最適ポートフォリオとは何か。",answer:"最大の期待効用が得られる（リスク最小・リターン最大となる）ポートフォリオ",importance:"A",source_page:"本編 p.51"},
-        {id:"keiei1-ch2-023",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論（Key Word）",type:"定義・穴埋め",question:"接点ポートフォリオとは何か。",answer:"無リスク資産と複数のリスク資産を組み合わせた場合における、リスクフリーレートからリスク資産のみの有効フロンティアへと引いた接線と、リスク資産のみの有効フロンティアとの接点",importance:"A",source_page:"本編 p.51"},
-        {id:"keiei1-ch2-024",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"分類",question:"市場ポートフォリオの特徴を2つ挙げよ。",answer:"①市場に存在する全てのリスク資産を含んでいる、②それぞれのリスク資産への投資割合は、それぞれのリスク資産の時価総額の比率に等しい（市場均衡下における接点ポートフォリオが市場ポートフォリオである）",importance:"A",source_page:"本編 p.52"},
-        {id:"keiei1-ch2-025",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"定義・穴埋め",question:"資本市場線（CML）とは何か。",answer:"リスクフリーレートと市場ポートフォリオを結ぶ直線（CML：Capital Market Line）",importance:"A",source_page:"本編 p.52"},
-        {id:"keiei1-ch2-026",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"定義・穴埋め",question:"空売りとはどのような取引か。どのような株式に対して行われるか。",answer:"株券を借りて売却する取引のこと。割高な株式に対して行われる（株価が理論値に収束したときに買い戻して返却し、差額の利益を得る）",importance:"B",source_page:"本編 p.57"},
-        {id:"keiei1-ch2-027",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"定義・穴埋め",question:"シングルファクターモデルとは何か。また、CAPMに対する位置づけと批判は何か。",answer:"リスク資産のリターンを算定する際に、1つのファクター（変数）しか考慮しないモデル。CAPMはβリスクのみしか考慮しないシングルファクターモデルであり、信頼性に欠けるという問題点が指摘される",importance:"B",source_page:"本編 p.57"},
-        {id:"keiei1-ch2-028",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"分類",question:"TOPIXと日経225は、それぞれどのように算出される指数か。",answer:"TOPIXは東証（プライム市場等）の全銘柄の時価総額を指数化したもの（1968年1月4日を基準日として100）。日経225はプライム市場上場の225銘柄の株価合計を、除数（銘柄数に一定の修正を加えた値）で除して指数化したもの",importance:"B",source_page:"本編 p.57"},
-        {id:"keiei1-ch2-029",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"分類",question:"効率的市場が成立するために必要となる2つの要素は何か。",answer:"新しい情報を素早く価格に反映する情報処理のスピードと、そのような情報を正当に評価できる情報処理の精度の2つ",importance:"B",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-030",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"効率的市場において、株価はどのように動くか。また、投資家はアブノーマルリターンを得られるか。",answer:"株価は新しい情報が出る度に更新され、理論価格を基準にランダムウォーク（千鳥足）となる。そのため、どのような情報を利用しても、リスクに見合った以上のリターン（アブノーマルリターン）を継続的に得ることはできない",importance:"A",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-031",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"市場が効率的な場合、株式の正味現在価値（NPV）はどうなるか。非効率的な場合との違いも答えよ。",answer:"0となる（株価の実際値が理論値＝将来キャッシュフローの割引現在価値と一致するため）。一方、市場が非効率的な場合は株価の実際値が理論値から乖離するため、正味現在価値は0とはならない",importance:"B",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-032",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説（Key Word）",type:"定義・穴埋め",question:"ノイズトレーダーリスクとは何か。",answer:"非合理的投資家であるノイズトレーダーが、ファンダメンタルズとは関係なしに、彼らの心理状態によって非合理的な取引を行い、結果として株価が理論値から大きく乖離してしまうリスク",importance:"C+",source_page:"本編 p.62"},
-        {id:"keiei1-ch2-033",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"分類",question:"利付債、割引債、永久債は、それぞれどのような債券か。",answer:"利付債（クーポン債）は毎期、一定のクーポン利息が支払われる債券。割引債（ゼロクーポン債）は利息に相当する金額を額面金額から差し引いて発行する債券で、償還されるまでクーポンは一切受け取れず、償還日に額面金額を回収するのみ。永久債（コンソル債）は元本償還がなく、利子が永久に支払われる永久債券",importance:"B",source_page:"本編 p.63"},
-        {id:"keiei1-ch2-034",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"分類",question:"直接利回りと実効利回りは、それぞれどのような利回りか。",answer:"直接利回りは債券価格に対する年間のクーポン収入の割合。実効利回りは、クーポン収入を当該債券以外の別の投資案に再投資を行い、その元利合計を償還日に償還金とともに一括して回収すると仮定した場合の利回り",importance:"C+",source_page:"本編 p.63"},
-        {id:"keiei1-ch2-035",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"分類",question:"システマティック・リスクとアンシステマティック・リスクは、それぞれどのようなリスクか。",answer:"システマティック・リスクは市場全体に関わるリスクであり、市場ポートフォリオの収益率の変動はこれのみに起因する。アンシステマティック・リスクは個別の証券に固有のリスクであり、分散投資によって除去でき、市場ポートフォリオではゼロになる",importance:"A",source_page:"本編 p.53"},
-        {id:"keiei1-ch2-036",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"β（ベータ）とは、どのような指標か。",answer:"市場ポートフォリオの収益率が1％変化したとき、個別証券の収益率が何％変化するかの比率を表す指標。個別証券がどれだけシステマティック・リスクの影響を受けるかを表す",importance:"B",source_page:"本編 p.55"},
-        {id:"keiei1-ch2-037",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"証券市場線（SML）とは何か。",answer:"個別証券の期待収益率を「β」という指標の一次関数として表す直線（モデル）のこと（SML：Security Market Line）",importance:"A",source_page:"本編 p.55"},
-        {id:"keiei1-ch2-038",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"分類",question:"アンレバードベータとレバードベータとは何か。また、負債と現金のベータはいくつか。",answer:"負債を利用していない企業のベータがアンレバードベータ、負債を利用している企業のベータがレバードベータ。レバードベータは負債の利用に伴う財務リスクの発生により、資本構成変更前に比べ増大する。なお、負債のベータは0、現金のベータも0である",importance:"A",source_page:"本編 p.58"},
-        {id:"keiei1-ch2-039",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"分類",question:"パッシブ運用とアクティブ運用は、それぞれどのような前提・運用方法か。",answer:"パッシブ運用は市場が「効率的」であることを前提に、市場平均並みの収益率を狙う運用方法。アクティブ運用は市場が「非効率的」であることを前提に、テクニカル分析やファンダメンタルズ分析等により市場平均以上の収益率を目指す運用方法",importance:"B",source_page:"本編 p.60"},
-        {id:"keiei1-ch2-040",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"アノマリーとは何か。",answer:"現実の市場で観察された、既存の理論では説明できない、市場の非効率性を示唆する事象",importance:"B",source_page:"本編 p.60"},
-        {id:"keiei1-ch2-041",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"効率的な市場において、株式分割（1株を2株に分割）を行うと、発行済株式総数と株価はどうなるか。",answer:"市場が効率的である場合、1株を2株に分割すると、発行済株式総数は2倍になり、株価は2分の1になる",importance:"B",source_page:"本編 p.60"},
-        {id:"keiei1-ch2-042",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"理論・学者",question:"プロスペクト理論とはどのような理論か。誰が提唱したかも答えよ。",answer:"投資家が常にリスク回避的行動を採るとする期待効用理論を否定し、利得（儲け）の領域ではリスク回避的選択行動をとる人間が、損失の領域ではリスク愛好的選択行動をとるという理論。ダニエル・カーネマンとエイモス・トベルスキーが提唱した",importance:"A",source_page:"本編 p.61"},
-        {id:"keiei1-ch2-043",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"行動ファイナンスにおける「損失回避」のバイアスとは何か。",answer:"人間は利得よりも損失の方を2.25倍程度深刻に受け止めるというバイアス（意思決定における偏りや歪み）",importance:"C+",source_page:"本編 p.61"},
-        {id:"keiei1-ch2-044",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"デュレーションとは何を表す概念か。",answer:"債券の平均回収期間を表す概念",importance:"A",source_page:"本編 p.66"},
-        {id:"keiei1-ch2-045",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"コンベクシティとは、どのような指標か。",answer:"修正デュレーションを用いて算定した債券価格の変化額はあくまで近似値であり、その近似値と、割引現在価値で算定した厳密な値との間の誤差を算定する指標",importance:"C+",source_page:"本編 p.67"},
-        {id:"keiei1-ch2-046",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"公式",question:"債券ポートフォリオのデュレーションは、どのように求めるか。",answer:"各債券のデュレーションを投資金額の比率で加重平均した値",importance:"B",source_page:"本編 p.67"},
-        {id:"keiei1-ch2-047",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"イミュニゼーション戦略とは、どのような債券投資戦略か。",answer:"債券ポートフォリオの所有期間とデュレーションを一致させることで債券価格を一定にする（金利変動を免疫化させる）戦略",importance:"B",source_page:"本編 p.68"},
-        {id:"keiei1-ch2-048",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"金利の期間構造とイールドカーブとは何か。また、逆イールド・順イールドとは何か。",answer:"満期までの期間と金利の大小関係のことを金利の期間構造といい、この関係を示すのがイールドカーブ（利回り曲線）である。イールドカーブは具体的にはスポットレート（割引債の最終利回り）と満期の関係を示し、右下がりの場合を逆イールド、右上がりの場合を順イールドという",importance:"A",source_page:"本編 p.68"},
-        {id:"keiei1-ch2-049",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"純粋期待仮説とは、どのような仮説か。",answer:"イールドカーブの形状は、投資家が将来の金利をどのように予想するかによって決まるという仮説",importance:"B",source_page:"本編 p.69"},
-        {id:"keiei1-ch2-050",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"流動性プレミアム仮説とは、どのような仮説か。",answer:"満期までの期間が長くなるほど流動性リスクが高くなり、これに対するリスクプレミアム（流動性プレミアム）が発生するという仮説",importance:"B",source_page:"本編 p.69"},
+        {id:"keiei1-ch2-005",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"定義・穴埋め",question:"アンシステマティック・リスクとは何か。",answer:"それぞれ独立なリスク要因に起因し、市場ポートフォリオと連動しないリスク（非組織的リスク・個別リスクとも呼ばれる。例：個々の企業の業績の良し悪し）",importance:"A",source_page:"本編 p.52",note:"アンシステマティック・リスクは市場ポートフォリオと連動しない個別リスクで、分散投資により除去できるとされる。"},
+        {id:"keiei1-ch2-006",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"リスクの市場価格とは何か。",answer:"市場ポートフォリオのリスクプレミアムを市場ポートフォリオのリスクで除したもの（リスク1単位あたりのリスクプレミアム。資本市場線の傾きに相当する）",importance:"B",source_page:"本編 p.52",note:"リスクの市場価格はリスク1単位あたりのリスクプレミアムで、資本市場線の傾きに相当する。"},
+        {id:"keiei1-ch2-007",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"理論・学者",question:"CAPMとはどのようなモデルか。",answer:"個別証券の期待収益率を「β」という指標の一次関数として表すモデル（資本資産評価モデル）。その一次関数は証券市場線（SML）と呼ばれる",importance:"A",source_page:"本編 p.53",note:"CAPMは個別証券の期待収益率をβの一次関数で表すモデルで、その関係は証券市場線として示される。"},
+        {id:"keiei1-ch2-008",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"β（ベータ）は何を表す指標か。",answer:"市場ポートフォリオのシステマティック・リスクを1としたときの、個別証券のシステマティック・リスク（市場ポートフォリオの収益率と個別証券の収益率との連動性を表す）",importance:"A",source_page:"本編 p.53",note:"βは市場ポートフォリオのリスクを1としたときの個別証券のシステマティック・リスクの大きさを表す。"},
+        {id:"keiei1-ch2-009",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"公式",question:"証券市場線（SML）の式：個別証券の均衡期待収益率E(Ri)の公式は？",answer:"E(Ri)＝rf＋β×（E(Rm)－rf）",importance:"A",source_page:"本編 p.53",note:"証券市場線の式は、期待収益率がリスクフリーレートとβに応じたリスクプレミアムの合計になることを示す。"},
+        {id:"keiei1-ch2-010",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"判定",question:"資本市場線（CML）を使って個別証券の理論的な期待収益率を算定できるか。",answer:"算定できない。資本市場線は市場均衡下の有効フロンティア（効率的ポートフォリオ）を示すもので、個別証券の理論的期待収益率には証券市場線を用いる",importance:"A",source_page:"本編 p.54",note:"資本市場線は効率的ポートフォリオ専用の直線であり、個別証券の期待収益率の算定には証券市場線を用いる。"},
+        {id:"keiei1-ch2-011",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"理論・学者",question:"市場の効率性を利用可能な情報のレベルに応じて3段階（ウィーク／セミストロング／ストロングフォーム）に分類した学者は誰か。",answer:"ユージン・ファマ",importance:"A",source_page:"本編 p.58",note:"市場の効率性を3段階に分類したのはファマで、効率的市場仮説の中心的な提唱者である。"},
+        {id:"keiei1-ch2-012",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"セミストロングフォーム（準強度の効率性）とはどのような市場か。",answer:"いかなる投資家も、公開されている情報を使って超過利益を得ることができない市場（既に公開された情報は素早く適切に株価に反映される）",importance:"A",source_page:"本編 p.58",note:"セミストロングフォームでは公開情報は素早く株価に反映されるため、その情報では超過利益を得られない。"},
+        {id:"keiei1-ch2-013",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"最終利回りとは何か。",answer:"債券の将来キャッシュ・フローと現在価値（購入価格）を一致させる単一の割引率（IRR）",importance:"A",source_page:"本編 p.63",note:"最終利回りは債券の将来キャッシュ・フローと購入価格を一致させる割引率で、内部収益率（IRR）に相当する。"},
+        {id:"keiei1-ch2-014",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"デュレーション（マコーレーデュレーション）とは何か。",answer:"最終利回りが変化したときに債券価格が変化する程度を示す指標であり、債券投資の平均回収期間を示す",importance:"A",source_page:"本編 p.66",note:"デュレーションは債券の平均回収期間を示すとともに、利回りの変化に対する債券価格の感応度を表す指標である。"},
+        {id:"keiei1-ch2-015",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"正規分布とは何か。",answer:"期待値（平均値）を中心とした左右対称の確率分布のこと",importance:"C+",source_page:"本編 p.44",note:"正規分布は期待値を中心とする左右対称の分布で、平均・分散アプローチの前提となる確率分布である。"},
+        {id:"keiei1-ch2-016",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"平均・分散アプローチとは、どのようなアプローチか。",answer:"投資家を「リスクとリターンという2つの要素のみに基づいて意思決定する存在」と捉えるアプローチ",importance:"B",source_page:"本編 p.44",note:"平均・分散アプローチは投資家がリスクとリターンの2要素のみで意思決定すると捉える考え方である。"},
+        {id:"keiei1-ch2-017",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"期待効用理論とは何か。",answer:"投資家の期待効用（満足度）を最大化させるための意思決定の方法",importance:"B",source_page:"本編 p.44",note:"期待効用理論は投資家が期待効用（満足度）を最大化するよう意思決定するという考え方である。"},
+        {id:"keiei1-ch2-018",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第1節 インベストメントの基礎知識（Key Word）",type:"定義・穴埋め",question:"無差別曲線とは何か。リスク回避的投資家の場合の形状と、位置・傾きの意味も答えよ。",answer:"投資家に同じ効用を与えるリスクとリターンの組み合わせの軌跡。リスク回避的投資家を前提とすると右上がりで一般的に下に凸となり、左上方に位置する無差別曲線ほど高い効用を示す。また、リスク回避度が高い投資家ほど傾きが急になる",importance:"B",source_page:"本編 p.44",note:"無差別曲線は同じ効用を与える組合せの軌跡で、左上方ほど効用が高く、リスク回避度が高いほど傾きが急になる。"},
+        {id:"keiei1-ch2-019",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"公式",question:"ポートフォリオのリターン（期待収益率）は、どのように算定するか。",answer:"ポートフォリオを構成する各証券の期待収益率を投資比率で加重平均した値（投資比率は合計が1となる比率を用いる）",importance:"A",source_page:"本編 p.45",note:"ポートフォリオの期待収益率は構成証券の期待収益率の投資比率による加重平均で、相関係数の影響を受けない。"},
+        {id:"keiei1-ch2-020",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"定義・穴埋め",question:"ポートフォリオの標準偏差が、個々の証券の標準偏差の単純な加重平均とはならないのはなぜか。",answer:"各証券によって収益の変動の方向性が異なるため。個々の株式の収益の変動の方向性（相関）を考慮して算定する必要がある",importance:"A",source_page:"本編 p.45",note:"ポートフォリオの標準偏差は各証券の収益の変動の方向性（相関）を考慮して算定されるため、単純な加重平均にはならない。"},
+        {id:"keiei1-ch2-021",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論",type:"分類",question:"相関係数ρが1、0、－1のとき、それぞれ2つの証券の収益率はどのような関係にあるか。",answer:"ρ＝1は2つの証券が同じ動きをする（完全相関）、ρ＝0は全く無関連、ρ＝－1は正反対の動きをする（完全逆相関）",importance:"A",source_page:"本編 p.45",note:"相関係数は2つの証券の収益率の連動の方向と強さを示し、1で完全相関、－1で完全逆相関となる。"},
+        {id:"keiei1-ch2-022",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論（Key Word）",type:"定義・穴埋め",question:"最適ポートフォリオとは何か。",answer:"最大の期待効用が得られる（リスク最小・リターン最大となる）ポートフォリオ",importance:"A",source_page:"本編 p.51",note:"最適ポートフォリオは投資家の期待効用が最大となるポートフォリオである。"},
+        {id:"keiei1-ch2-023",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第2節 ポートフォリオ理論（Key Word）",type:"定義・穴埋め",question:"接点ポートフォリオとは何か。",answer:"無リスク資産と複数のリスク資産を組み合わせた場合における、リスクフリーレートからリスク資産のみの有効フロンティアへと引いた接線と、リスク資産のみの有効フロンティアとの接点",importance:"A",source_page:"本編 p.51",note:"接点ポートフォリオは、リスクフリーレートから有効フロンティアへ引いた接線の接点に位置するポートフォリオである。"},
+        {id:"keiei1-ch2-024",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"分類",question:"市場ポートフォリオの特徴を2つ挙げよ。",answer:"①市場に存在する全てのリスク資産を含んでいる、②それぞれのリスク資産への投資割合は、それぞれのリスク資産の時価総額の比率に等しい（市場均衡下における接点ポートフォリオが市場ポートフォリオである）",importance:"A",source_page:"本編 p.52",note:"市場ポートフォリオは全てのリスク資産を時価総額比率で含むポートフォリオで、市場均衡下では接点ポートフォリオと一致する。"},
+        {id:"keiei1-ch2-025",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"定義・穴埋め",question:"資本市場線（CML）とは何か。",answer:"リスクフリーレートと市場ポートフォリオを結ぶ直線（CML：Capital Market Line）",importance:"A",source_page:"本編 p.52",note:"資本市場線はリスクフリーレートと市場ポートフォリオを結ぶ直線で、効率的ポートフォリオのリスクとリターンの関係を示す。"},
+        {id:"keiei1-ch2-026",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"定義・穴埋め",question:"空売りとはどのような取引か。どのような株式に対して行われるか。",answer:"株券を借りて売却する取引のこと。割高な株式に対して行われる（株価が理論値に収束したときに買い戻して返却し、差額の利益を得る）",importance:"B",source_page:"本編 p.57",note:"空売りは借りた株券を売却する取引で、割高な株式に対して行われ、株価が理論値に収束したときの差額が利益となる。"},
+        {id:"keiei1-ch2-027",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"定義・穴埋め",question:"シングルファクターモデルとは何か。また、CAPMに対する位置づけと批判は何か。",answer:"リスク資産のリターンを算定する際に、1つのファクター（変数）しか考慮しないモデル。CAPMはβリスクのみしか考慮しないシングルファクターモデルであり、信頼性に欠けるという問題点が指摘される",importance:"B",source_page:"本編 p.57",note:"CAPMはβのみを考慮するシングルファクターモデルであり、信頼性に欠けるとの批判がある。"},
+        {id:"keiei1-ch2-028",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM（Key Word）",type:"分類",question:"TOPIXと日経225は、それぞれどのように算出される指数か。",answer:"TOPIXは東証（プライム市場等）の全銘柄の時価総額を指数化したもの（1968年1月4日を基準日として100）。日経225はプライム市場上場の225銘柄の株価合計を、除数（銘柄数に一定の修正を加えた値）で除して指数化したもの",importance:"B",source_page:"本編 p.57",note:"TOPIXは全銘柄の時価総額を指数化したもので、日経225は225銘柄の株価合計を除数で割って指数化したものである。"},
+        {id:"keiei1-ch2-029",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"分類",question:"効率的市場が成立するために必要となる2つの要素は何か。",answer:"新しい情報を素早く価格に反映する情報処理のスピードと、そのような情報を正当に評価できる情報処理の精度の2つ",importance:"B",source_page:"本編 p.58",note:"効率的市場が成立するには、情報を素早く価格に反映するスピードと、正当に評価できる精度の2要素が必要となる。"},
+        {id:"keiei1-ch2-030",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"効率的市場において、株価はどのように動くか。また、投資家はアブノーマルリターンを得られるか。",answer:"株価は新しい情報が出る度に更新され、理論価格を基準にランダムウォーク（千鳥足）となる。そのため、どのような情報を利用しても、リスクに見合った以上のリターン（アブノーマルリターン）を継続的に得ることはできない",importance:"A",source_page:"本編 p.58",note:"効率的市場では株価は理論価格を基準にランダムウォークし、継続的にアブノーマルリターンを得ることはできない。"},
+        {id:"keiei1-ch2-031",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"市場が効率的な場合、株式の正味現在価値（NPV）はどうなるか。非効率的な場合との違いも答えよ。",answer:"0となる（株価の実際値が理論値＝将来キャッシュフローの割引現在価値と一致するため）。一方、市場が非効率的な場合は株価の実際値が理論値から乖離するため、正味現在価値は0とはならない",importance:"B",source_page:"本編 p.58",note:"効率的市場では株価の実際値が理論値と一致するため、株式の正味現在価値は0となる。"},
+        {id:"keiei1-ch2-032",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説（Key Word）",type:"定義・穴埋め",question:"ノイズトレーダーリスクとは何か。",answer:"非合理的投資家であるノイズトレーダーが、ファンダメンタルズとは関係なしに、彼らの心理状態によって非合理的な取引を行い、結果として株価が理論値から大きく乖離してしまうリスク",importance:"C+",source_page:"本編 p.62",note:"ノイズトレーダーリスクは、非合理的な投資家の取引により株価が理論値から大きく乖離してしまうリスクである。"},
+        {id:"keiei1-ch2-033",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"分類",question:"利付債、割引債、永久債は、それぞれどのような債券か。",answer:"利付債（クーポン債）は毎期、一定のクーポン利息が支払われる債券。割引債（ゼロクーポン債）は利息に相当する金額を額面金額から差し引いて発行する債券で、償還されるまでクーポンは一切受け取れず、償還日に額面金額を回収するのみ。永久債（コンソル債）は元本償還がなく、利子が永久に支払われる永久債券",importance:"B",source_page:"本編 p.63",note:"利付債は毎期クーポンを受け取り、割引債はクーポンなし、永久債は元本償還がなく利子が永久に支払われる。"},
+        {id:"keiei1-ch2-034",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"分類",question:"直接利回りと実効利回りは、それぞれどのような利回りか。",answer:"直接利回りは債券価格に対する年間のクーポン収入の割合。実効利回りは、クーポン収入を当該債券以外の別の投資案に再投資を行い、その元利合計を償還日に償還金とともに一括して回収すると仮定した場合の利回り",importance:"C+",source_page:"本編 p.63",note:"直接利回りは価格に対する年間クーポン収入の割合で、実効利回りはクーポンの再投資まで仮定した利回りである。"},
+        {id:"keiei1-ch2-035",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第3節 市場均衡理論",type:"分類",question:"システマティック・リスクとアンシステマティック・リスクは、それぞれどのようなリスクか。",answer:"システマティック・リスクは市場全体に関わるリスクであり、市場ポートフォリオの収益率の変動はこれのみに起因する。アンシステマティック・リスクは個別の証券に固有のリスクであり、分散投資によって除去でき、市場ポートフォリオではゼロになる",importance:"A",source_page:"本編 p.53",note:"システマティック・リスクは市場全体のリスクで除去できないのに対し、アンシステマティック・リスクは分散投資により除去できる。"},
+        {id:"keiei1-ch2-036",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"β（ベータ）とは、どのような指標か。",answer:"市場ポートフォリオの収益率が1％変化したとき、個別証券の収益率が何％変化するかの比率を表す指標。個別証券がどれだけシステマティック・リスクの影響を受けるかを表す",importance:"B",source_page:"本編 p.55",note:"βは市場ポートフォリオの収益率の変化に対する個別証券の収益率の感応度を表す指標である。"},
+        {id:"keiei1-ch2-037",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"定義・穴埋め",question:"証券市場線（SML）とは何か。",answer:"個別証券の期待収益率を「β」という指標の一次関数として表す直線（モデル）のこと（SML：Security Market Line）",importance:"A",source_page:"本編 p.55",note:"証券市場線は個別証券の期待収益率とβの関係を表す直線で、CAPMの帰結として示される。"},
+        {id:"keiei1-ch2-038",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第4節 CAPM",type:"分類",question:"アンレバードベータとレバードベータとは何か。また、負債と現金のベータはいくつか。",answer:"負債を利用していない企業のベータがアンレバードベータ、負債を利用している企業のベータがレバードベータ。レバードベータは負債の利用に伴う財務リスクの発生により、資本構成変更前に比べ増大する。なお、負債のベータは0、現金のベータも0である",importance:"A",source_page:"本編 p.58",note:"レバードベータは負債利用による財務リスクのためアンレバードベータより大きくなり、負債と現金のベータは0とされる。"},
+        {id:"keiei1-ch2-039",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"分類",question:"パッシブ運用とアクティブ運用は、それぞれどのような前提・運用方法か。",answer:"パッシブ運用は市場が「効率的」であることを前提に、市場平均並みの収益率を狙う運用方法。アクティブ運用は市場が「非効率的」であることを前提に、テクニカル分析やファンダメンタルズ分析等により市場平均以上の収益率を目指す運用方法",importance:"B",source_page:"本編 p.60",note:"パッシブ運用は市場の効率性を前提に市場平均並みを狙い、アクティブ運用は非効率性を前提に市場平均以上を目指す。"},
+        {id:"keiei1-ch2-040",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"アノマリーとは何か。",answer:"現実の市場で観察された、既存の理論では説明できない、市場の非効率性を示唆する事象",importance:"B",source_page:"本編 p.60",note:"アノマリーは既存の理論では説明できない事象で、市場の非効率性を示唆するものとされる。"},
+        {id:"keiei1-ch2-041",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"判定",question:"効率的な市場において、株式分割（1株を2株に分割）を行うと、発行済株式総数と株価はどうなるか。",answer:"市場が効率的である場合、1株を2株に分割すると、発行済株式総数は2倍になり、株価は2分の1になる",importance:"B",source_page:"本編 p.60",note:"効率的市場では株式分割をしても企業価値は変わらないため、株式総数は2倍になり株価は2分の1になる。"},
+        {id:"keiei1-ch2-042",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"理論・学者",question:"プロスペクト理論とはどのような理論か。誰が提唱したかも答えよ。",answer:"投資家が常にリスク回避的行動を採るとする期待効用理論を否定し、利得（儲け）の領域ではリスク回避的選択行動をとる人間が、損失の領域ではリスク愛好的選択行動をとるという理論。ダニエル・カーネマンとエイモス・トベルスキーが提唱した",importance:"A",source_page:"本編 p.61",note:"プロスペクト理論はカーネマンとトベルスキーが提唱し、利得ではリスク回避的、損失ではリスク愛好的になる傾向を示す。"},
+        {id:"keiei1-ch2-043",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第5節 効率的市場仮説",type:"定義・穴埋め",question:"行動ファイナンスにおける「損失回避」のバイアスとは何か。",answer:"人間は利得よりも損失の方を2.25倍程度深刻に受け止めるというバイアス（意思決定における偏りや歪み）",importance:"C+",source_page:"本編 p.61",note:"損失回避は利得よりも損失を2.25倍程度重く受け止めるバイアスで、プロスペクト理論の要素の1つである。"},
+        {id:"keiei1-ch2-044",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"デュレーションとは何を表す概念か。",answer:"債券の平均回収期間を表す概念",importance:"A",source_page:"本編 p.66",note:"デュレーションは債券の平均回収期間を表す概念である。"},
+        {id:"keiei1-ch2-045",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"コンベクシティとは、どのような指標か。",answer:"修正デュレーションを用いて算定した債券価格の変化額はあくまで近似値であり、その近似値と、割引現在価値で算定した厳密な値との間の誤差を算定する指標",importance:"C+",source_page:"本編 p.67",note:"コンベクシティは、修正デュレーションによる債券価格の変化額の近似値と厳密な値との誤差を算定する指標である。"},
+        {id:"keiei1-ch2-046",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"公式",question:"債券ポートフォリオのデュレーションは、どのように求めるか。",answer:"各債券のデュレーションを投資金額の比率で加重平均した値",importance:"B",source_page:"本編 p.67",note:"債券ポートフォリオのデュレーションは、各債券のデュレーションを投資金額の比率で加重平均して求める。"},
+        {id:"keiei1-ch2-047",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"イミュニゼーション戦略とは、どのような債券投資戦略か。",answer:"債券ポートフォリオの所有期間とデュレーションを一致させることで債券価格を一定にする（金利変動を免疫化させる）戦略",importance:"B",source_page:"本編 p.68",note:"イミュニゼーション戦略は所有期間とデュレーションを一致させ、金利変動の影響を免疫化する戦略である。"},
+        {id:"keiei1-ch2-048",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"金利の期間構造とイールドカーブとは何か。また、逆イールド・順イールドとは何か。",answer:"満期までの期間と金利の大小関係のことを金利の期間構造といい、この関係を示すのがイールドカーブ（利回り曲線）である。イールドカーブは具体的にはスポットレート（割引債の最終利回り）と満期の関係を示し、右下がりの場合を逆イールド、右上がりの場合を順イールドという",importance:"A",source_page:"本編 p.68",note:"金利の期間構造は満期と金利の関係で、イールドカーブで示され、右下がりが逆イールド、右上がりが順イールドである。"},
+        {id:"keiei1-ch2-049",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"純粋期待仮説とは、どのような仮説か。",answer:"イールドカーブの形状は、投資家が将来の金利をどのように予想するかによって決まるという仮説",importance:"B",source_page:"本編 p.69",note:"純粋期待仮説は、イールドカーブの形状が投資家の将来金利の予想によって決まるとする仮説である。"},
+        {id:"keiei1-ch2-050",chapterKey:"ch2",chapterShort:"第2章",chapterFull:"第2章 インベストメント",section:"第6節 債券投資",type:"定義・穴埋め",question:"流動性プレミアム仮説とは、どのような仮説か。",answer:"満期までの期間が長くなるほど流動性リスクが高くなり、これに対するリスクプレミアム（流動性プレミアム）が発生するという仮説",importance:"B",source_page:"本編 p.69",note:"流動性プレミアム仮説は、満期が長いほど流動性リスクが高まり流動性プレミアムが発生するとする仮説である。"},
 
         // ---- 第3章 デリバティブ（本編 p.70〜101）46問 ----
         {id:"keiei1-ch3-001",chapterKey:"ch3",chapterShort:"第3章",chapterFull:"第3章 デリバティブ",section:"第1節 デリバティブの基礎知識",type:"分類",question:"デリバティブ（金融派生商品）は、一般に3つに分類される。それは何か。",answer:"先物・先渡取引、スワップ取引、オプション取引",importance:"C+",source_page:"本編 p.70"},
@@ -3787,6 +3794,117 @@
       });
       els.resetBtn.addEventListener("click", resetAll);
       els.resetBtn2.addEventListener("click", resetAll);
+
+      // ---- 成績バックアップ（書き出し／読み込み） ----
+      function buildBackupData(){
+        return {
+          app: "keiei-qa",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          learned: Object.keys(learned).sort(),
+          weak: Object.keys(weak).sort()
+        };
+      }
+      function parseBackupData(obj){
+        if(!obj || typeof obj!=="object") return null;
+        if(obj.app!=="keiei-qa") return null;
+        if(Object.prototype.toString.call(obj.learned)!=="[object Array]") return null;
+        if(Object.prototype.toString.call(obj.weak)!=="[object Array]") return null;
+        var known = {};
+        for(var i=0;i<QUESTIONS.length;i++) known[QUESTIONS[i].id]=true;
+        function toSet(arr){
+          var out = {};
+          for(var j=0;j<arr.length;j++){
+            if(typeof arr[j]==="string" && known[arr[j]]) out[arr[j]]=true;
+          }
+          return out;
+        }
+        return { learned: toSet(obj.learned), weak: toSet(obj.weak) };
+      }
+      var backupMsg = document.getElementById("backupMsg");
+      var backupImportFile = document.getElementById("backupImportFile");
+      var pendingBackup = null;
+      function showBackupConfirm(parsed, learnedCount, weakCount){
+        pendingBackup = parsed;
+        backupMsg.textContent = "";
+        var text = document.createElement("span");
+        text.textContent = "成績（覚えた"+learnedCount+"件・苦手"+weakCount+"件）を読み込んで、今の記録に上書きします。よろしいですか？";
+        var okBtn = document.createElement("button");
+        okBtn.type = "button";
+        okBtn.className = "btn small";
+        okBtn.textContent = "上書きする";
+        okBtn.style.margin = "6px 4px 0";
+        var cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "btn small";
+        cancelBtn.textContent = "キャンセル";
+        cancelBtn.style.margin = "6px 4px 0";
+        okBtn.addEventListener("click", function(){
+          if(!pendingBackup) return;
+          learned = pendingBackup.learned;
+          weak = pendingBackup.weak;
+          pendingBackup = null;
+          saveLearned();
+          saveWeak();
+          jumpTargetId = null;
+          idx = 0;
+          answerShown = false;
+          buildDeck(null);
+          backupMsg.textContent = "成績を読み込みました（覚えた"+learnedCount+"件／苦手"+weakCount+"件）。";
+        });
+        cancelBtn.addEventListener("click", function(){
+          pendingBackup = null;
+          backupMsg.textContent = "";
+        });
+        backupMsg.appendChild(text);
+        backupMsg.appendChild(document.createElement("br"));
+        backupMsg.appendChild(okBtn);
+        backupMsg.appendChild(cancelBtn);
+      }
+      document.getElementById("backupExportBtn").addEventListener("click", function(){
+        var now = new Date();
+        function pad2(n){ return (n<10 ? "0" : "") + n; }
+        var fileName = "keiei-qa-backup-" + now.getFullYear() + "-" + pad2(now.getMonth()+1) + "-" + pad2(now.getDate()) + ".json";
+        var blob = new Blob([JSON.stringify(buildBackupData(), null, 2)], {type:"application/json"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+        backupMsg.textContent = "成績を書き出しました：" + fileName;
+      });
+      document.getElementById("backupImportBtn").addEventListener("click", function(){
+        backupImportFile.click();
+      });
+      backupImportFile.addEventListener("change", function(){
+        var file = backupImportFile.files && backupImportFile.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(){
+          var obj = null;
+          try{
+            obj = JSON.parse(reader.result);
+          }catch(e){
+            backupMsg.textContent = "読み込みに失敗しました：JSONとして読み取れませんでした。";
+            backupImportFile.value = "";
+            return;
+          }
+          var parsed = parseBackupData(obj);
+          if(!parsed){
+            backupMsg.textContent = "読み込みに失敗しました：ファイルの形式が正しくありません。";
+            backupImportFile.value = "";
+            return;
+          }
+          var learnedCount = Object.keys(parsed.learned).length;
+          var weakCount = Object.keys(parsed.weak).length;
+          backupImportFile.value = "";
+          showBackupConfirm(parsed, learnedCount, weakCount);
+        };
+        reader.readAsText(file);
+      });
 
       // mobile bottom action bar: same actions as the desktop controls
       els.prevBtnM.addEventListener("click", goPrev);
