@@ -8,47 +8,26 @@
     <title>経営学 一問一答</title>
     <style>
       :root{
-        --bg:#f3f7f1;
-        --surface:#ffffff;
-        --surface-2:#eaf2e6;
-        --text:#1d2b1f;
-        --muted:#5c7160;
-        --line:#d9e5d5;
-        --accent:#2e7d32;
-        --accent-ink:#ffffff;
-        --accent-soft:#e3f1df;
-        --heading:#17542a;
-        --rank-b-bg:#cfebc6;
-        --rank-b-fg:#1f6b2a;
-        --rank-cp-bg:#eef0d0;
-        --rank-cp-fg:#5d6314;
-        --warn:#b45309;
-        --warn-soft:#fbf0dc;
-        --warn-ink:#ffffff;
+        color-scheme:dark;
+        --bg:#0f1712;
+        --surface:#18241c;
+        --surface-2:#223129;
+        --text:#ecf5ee;
+        --muted:#a3b8a7;
+        --line:#30443a;
+        --accent:#5ec973;
+        --accent-ink:#07130b;
+        --accent-soft:#1d3325;
+        --heading:#a9dfb0;
+        --rank-b-bg:#21402a;
+        --rank-b-fg:#93daa0;
+        --rank-cp-bg:#30331b;
+        --rank-cp-fg:#ccd184;
+        --warn:#e8a34c;
+        --warn-soft:#2e2410;
+        --warn-ink:#1c1206;
         --radius:18px;
-        --shadow:0 8px 28px rgba(24,54,28,.08);
-      }
-      @media (prefers-color-scheme: dark){
-        :root{
-          --bg:#10160f;
-          --surface:#1a241a;
-          --surface-2:#232f22;
-          --text:#e9f2e7;
-          --muted:#9db3a0;
-          --line:#2f402e;
-          --accent:#5ec973;
-          --accent-ink:#0a140a;
-          --accent-soft:#1d301f;
-          --heading:#a5dba9;
-          --rank-b-bg:#21402a;
-          --rank-b-fg:#93daa0;
-          --rank-cp-bg:#30331b;
-          --rank-cp-fg:#ccd184;
-          --warn:#e8a34c;
-          --warn-soft:#2e2410;
-          --warn-ink:#1c1206;
-          --shadow:0 8px 28px rgba(0,0,0,.35);
-        }
+        --shadow:0 8px 28px rgba(0,0,0,.35);
       }
       *{box-sizing:border-box}
       html,body{margin:0;padding:0}
@@ -250,7 +229,7 @@
           display:flex;gap:8px;position:sticky;bottom:0;z-index:20;
           margin:14px -14px 0;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
           background:var(--surface);border-top:1px solid var(--line);
-          box-shadow:0 -6px 18px rgba(24,54,28,.12);
+          box-shadow:0 -6px 18px rgba(0,0,0,.35);
         }
         .ab-btn{
           flex:1 1 0;appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--text);
