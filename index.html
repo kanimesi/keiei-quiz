@@ -302,6 +302,35 @@
 .question{font-family:"Noto Serif JP",serif;font-weight:500;}
 .badge.imp{font-family:"Noto Serif JP",serif;}
 </style>
+
+<style>
+/* ===== CPA追加機能（ブックマーク／メモ／出題除外／直近3回／解答スタンプ） ===== */
+.card{position:relative}
+.cpa-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 12px}
+.cpa-btn{appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;min-height:36px}
+.cpa-btn.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.cpa-btn.excl.active{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.cpa-btn:disabled{opacity:.38;cursor:not-allowed}
+.cpa-recent{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.cpa-recent-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.04em}
+.cpa-slot{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);font-size:12px;font-weight:800;color:var(--muted)}
+.cpa-slot.o{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.cpa-slot.x{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.cpa-stamp{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:5}
+.cpa-stamp.show{display:flex}
+.cpa-stamp span{font-size:44px;font-weight:900;letter-spacing:.12em;padding:10px 26px;border:4px solid var(--accent);border-radius:14px;color:var(--accent);background:rgba(24,36,28,.88);transform:rotate(-8deg);box-shadow:var(--shadow)}
+.cpa-stamp.ng span{border-color:var(--warn);color:var(--warn)}
+.card.cpa-ok{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),var(--shadow);background:#1b3021}
+.card.cpa-ng{border-color:var(--warn);box-shadow:0 0 0 2px var(--warn),var(--shadow);background:#2c2417}
+.cpa-modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:18px}
+.cpa-modal.show{display:flex}
+.cpa-modal-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);width:100%;max-width:520px;padding:18px}
+.cpa-modal-box h3{margin:0 0 6px;font-size:16px;color:var(--heading)}
+.cpa-modal-q{font-size:12.5px;color:var(--muted);margin:0 0 10px;line-height:1.5}
+.cpa-modal-box textarea{width:100%;min-height:120px;resize:vertical;border:1px solid var(--line);background:var(--surface-2);color:var(--text);border-radius:12px;padding:11px 12px;font-size:15px;line-height:1.6;font-family:inherit;box-sizing:border-box}
+.cpa-modal-actions{display:flex;gap:8px;margin-top:12px}
+.cpa-modal-actions .btn{flex:1}
+</style>
 </head>
   <body>
     <div class="wrap">
@@ -385,6 +414,11 @@
             <span class="flt-label">苦手</span>
             <button class="flt-chip" type="button" id="weakOnlyChip" aria-pressed="false">苦手だけ <span id="weakCountLabel">（0問）</span></button>
           </div>
+<div class="flt-row" role="group" aria-label="ブックマークと出題除外で絞り込む">
+            <span class="flt-label">CPA追加</span>
+            <button class="flt-chip" type="button" id="cpaBmOnlyChip" aria-pressed="false">ブックマークのみ <span id="cpaBmCountLabel">（0問）</span></button>
+            <button class="flt-chip" type="button" id="cpaInclExclChip" aria-pressed="false">除外を含める <span id="cpaExclCountLabel">（除外0問）</span></button>
+          </div>
         </div>
       </div>
 
@@ -397,6 +431,12 @@
             <span class="badge imp" id="impBadge" data-rank="A" style="display:none">重要性 A</span>
             <span class="badge weak" id="weakBadge" style="display:none">苦手</span>
             <span class="chapter-label" id="idLabel"></span>
+          </div>
+          <div class="cpa-row" id="cpaRow">
+            <button type="button" class="cpa-btn" id="cpaBmBtn" aria-pressed="false">🔖 ブックマーク</button>
+            <button type="button" class="cpa-btn" id="cpaMemoBtn">📝 メモ</button>
+            <button type="button" class="cpa-btn excl" id="cpaExclBtn" aria-pressed="false">出題除外</button>
+            <span class="cpa-recent" id="cpaRecent" aria-label="直近3回の結果"><span class="cpa-recent-label">直近3回</span><span class="cpa-slot">—</span><span class="cpa-slot">—</span><span class="cpa-slot">—</span></span>
           </div>
           <div class="q-label">Question</div>
           <p class="question" id="questionText"></p>
@@ -413,7 +453,8 @@
           </div>
         </div>
 
-        <div class="done" id="doneState">
+                  <div class="cpa-stamp" id="cpaStamp" aria-hidden="true"><span id="cpaStampText">正解</span></div>
+<div class="done" id="doneState">
           <p class="big" id="doneTitle">このセット、全部覚えた！</p>
           <p id="doneText">おつかれさま。リセットすると、もう一度最初から回せます。</p>
           <button class="btn accent" type="button" id="resetBtn2">覚えたをリセットして最初から</button>
@@ -462,6 +503,18 @@
       </p>
     </div>
 
+
+    <div class="cpa-modal" id="cpaMemoModal" role="dialog" aria-modal="true" aria-labelledby="cpaMemoTitle">
+      <div class="cpa-modal-box">
+        <h3 id="cpaMemoTitle">メモ</h3>
+        <p class="cpa-modal-q" id="cpaMemoQ"></p>
+        <textarea id="cpaMemoText" placeholder="この問題のメモを自由に書けます" aria-label="問題のメモ"></textarea>
+        <div class="cpa-modal-actions">
+          <button type="button" class="btn" id="cpaMemoCancel">閉じる</button>
+          <button type="button" class="btn accent" id="cpaMemoSave">保存する</button>
+        </div>
+      </div>
+    </div>
     <script>
       // ============================================================
       // 問題データ — 章ごとに足していく
@@ -4226,6 +4279,276 @@
       buildTypeChips();
       buildDeck(null);
     </script>
+    <script>
+      // ===== CPA追加機能（追加のみ：既存機能・既存の保存キーには触れない） =====
+      // 保存は新しいキー keiei-cpa-extra-v1 の1つだけを使う。
+      // 形式: {bookmarks:{id:true}, memos:{id:"..."}, excluded:{id:true},
+      //        history:{id:["o"|"x", ...最大10件]}, last:{id:"o"|"x"}}
+      var CPA_LS_KEY = "keiei-cpa-extra-v1";
+      var cpaExtra = { bookmarks:{}, memos:{}, excluded:{}, history:{}, last:{} };
+      var cpaBmOnly = false;    // 「ブックマークのみ」絞り込み
+      var cpaInclExcl = false;  // 「除外を含める」（既定は除外を出題対象から外す）
+      var cpaPendingStamp = null;
+      var cpaStampTimer = null;
+      var cpaMemoTargetId = null;
+      function cpaKnown(id){
+        for(var i=0;i<QUESTIONS.length;i++){ if(QUESTIONS[i].id===id) return true; }
+        return false;
+      }
+      function cpaLoadExtra(){
+        var out = { bookmarks:{}, memos:{}, excluded:{}, history:{}, last:{} };
+        try{
+          var raw = window.localStorage.getItem(CPA_LS_KEY);
+          if(!raw) return out;
+          var obj = JSON.parse(raw);
+          if(!obj || typeof obj!=="object") return out;
+          function pickSet(src){
+            var o = {};
+            if(src && typeof src==="object"){ for(var k in src){ if(src[k]===true && cpaKnown(k)) o[k]=true; } }
+            return o;
+          }
+          out.bookmarks = pickSet(obj.bookmarks);
+          out.excluded = pickSet(obj.excluded);
+          if(obj.memos && typeof obj.memos==="object"){
+            for(var m in obj.memos){
+              if(typeof obj.memos[m]==="string" && obj.memos[m] && cpaKnown(m)) out.memos[m]=obj.memos[m];
+            }
+          }
+          if(obj.history && typeof obj.history==="object"){
+            for(var h in obj.history){
+              var arr = obj.history[h];
+              if(cpaKnown(h) && Object.prototype.toString.call(arr)==="[object Array]"){
+                var f = [];
+                for(var j=0;j<arr.length;j++){ if(arr[j]==="o" || arr[j]==="x") f.push(arr[j]); }
+                if(f.length) out.history[h]=f.slice(-10);
+              }
+            }
+          }
+          if(obj.last && typeof obj.last==="object"){
+            for(var l in obj.last){
+              if(cpaKnown(l) && (obj.last[l]==="o" || obj.last[l]==="x")) out.last[l]=obj.last[l];
+            }
+          }
+        }catch(e){}
+        return out;
+      }
+      function cpaSaveExtra(){
+        try{ window.localStorage.setItem(CPA_LS_KEY, JSON.stringify(cpaExtra)); }catch(e){}
+      }
+      cpaExtra = cpaLoadExtra();
+
+      var cpaEls = {
+        bmBtn: document.getElementById("cpaBmBtn"),
+        memoBtn: document.getElementById("cpaMemoBtn"),
+        exclBtn: document.getElementById("cpaExclBtn"),
+        recent: document.getElementById("cpaRecent"),
+        stamp: document.getElementById("cpaStamp"),
+        stampText: document.getElementById("cpaStampText"),
+        card: document.getElementById("card"),
+        bmOnlyChip: document.getElementById("cpaBmOnlyChip"),
+        inclExclChip: document.getElementById("cpaInclExclChip"),
+        bmCountLabel: document.getElementById("cpaBmCountLabel"),
+        exclCountLabel: document.getElementById("cpaExclCountLabel"),
+        modal: document.getElementById("cpaMemoModal"),
+        memoQ: document.getElementById("cpaMemoQ"),
+        memoText: document.getElementById("cpaMemoText"),
+        memoSave: document.getElementById("cpaMemoSave"),
+        memoCancel: document.getElementById("cpaMemoCancel"),
+        summaryText: document.getElementById("toolsSummaryText"),
+        learnedBtn: document.getElementById("learnedBtn"),
+        weakBtn: document.getElementById("weakBtn")
+      };
+
+      function cpaMatch(q){
+        if(cpaBmOnly && !cpaExtra.bookmarks[q.id]) return false;
+        if(!cpaInclExcl && cpaExtra.excluded[q.id]) return false;
+        return true;
+      }
+      // 絞り込みへの追加：既存の filteredQuestions を包んで拡張するだけ（既存条件はそのまま）
+      var cpaOrigFiltered = filteredQuestions;
+      filteredQuestions = function(){
+        return cpaOrigFiltered().filter(cpaMatch);
+      };
+      // 表示への追加：既存の render を包んで拡張するだけ
+      var cpaOrigRender = render;
+      render = function(){
+        cpaOrigRender();
+        cpaRenderExtra();
+      };
+
+      function cpaRecordResult(id, result){
+        if(!id) return;
+        var h = cpaExtra.history[id] || [];
+        h.push(result);
+        cpaExtra.history[id] = h.slice(-10);
+        cpaExtra.last[id] = result;
+        cpaSaveExtra();
+        cpaPendingStamp = { id: id, result: result };
+      }
+      // 自己採点ボタンの押下にフック（キャプチャ段階で、既存処理の前に現在の問題を記録する）
+      // 「覚えた」＝正解○／「苦手にする」＝不正解×（苦手を外す操作は記録しない）
+      document.addEventListener("click", function(e){
+        var t = e.target;
+        if(t === cpaEls.learnedBtn){
+          var q1 = currentQ();
+          if(q1) cpaRecordResult(q1.id, "o");
+        } else if(t === cpaEls.weakBtn){
+          var q2 = currentQ();
+          if(q2 && !weak[q2.id]) cpaRecordResult(q2.id, "x");
+        }
+      }, true);
+
+      function cpaShowStamp(result){
+        if(!cpaEls.stamp || !cpaEls.card) return;
+        cpaEls.stampText.textContent = (result==="o") ? "正解" : "不正解";
+        cpaEls.stamp.classList.toggle("ng", result!=="o");
+        cpaEls.stamp.classList.add("show");
+        cpaEls.card.classList.toggle("cpa-ok", result==="o");
+        cpaEls.card.classList.toggle("cpa-ng", result!=="o");
+        if(cpaStampTimer) clearTimeout(cpaStampTimer);
+        cpaStampTimer = setTimeout(function(){
+          cpaEls.stamp.classList.remove("show");
+          cpaEls.card.classList.remove("cpa-ok");
+          cpaEls.card.classList.remove("cpa-ng");
+        }, 1300);
+      }
+
+      function cpaRenderExtra(){
+        var q = currentQ();
+        if(cpaEls.bmOnlyChip){
+          cpaEls.bmOnlyChip.classList.toggle("active", cpaBmOnly);
+          cpaEls.bmOnlyChip.setAttribute("aria-pressed", cpaBmOnly ? "true" : "false");
+        }
+        if(cpaEls.inclExclChip){
+          cpaEls.inclExclChip.classList.toggle("active", cpaInclExcl);
+          cpaEls.inclExclChip.setAttribute("aria-pressed", cpaInclExcl ? "true" : "false");
+        }
+        if(cpaEls.bmCountLabel) cpaEls.bmCountLabel.textContent = "（"+Object.keys(cpaExtra.bookmarks).length+"問）";
+        if(cpaEls.exclCountLabel) cpaEls.exclCountLabel.textContent = "（除外"+Object.keys(cpaExtra.excluded).length+"問）";
+        if(cpaEls.summaryText){
+          var extraParts = [];
+          if(cpaBmOnly) extraParts.push("ブックマークのみ");
+          if(cpaInclExcl) extraParts.push("除外を含める");
+          if(extraParts.length){
+            var base = cpaEls.summaryText.textContent || "";
+            if(base.indexOf("条件なし")===0){
+              cpaEls.summaryText.textContent = "適用中："+extraParts.join("／");
+            } else if(base.indexOf(extraParts[0])===-1){
+              cpaEls.summaryText.textContent = base+"／"+extraParts.join("／");
+            }
+          }
+        }
+        var has = !!q;
+        if(cpaEls.bmBtn){
+          cpaEls.bmBtn.disabled = !has;
+          var on = has && !!cpaExtra.bookmarks[q.id];
+          cpaEls.bmBtn.classList.toggle("active", on);
+          cpaEls.bmBtn.setAttribute("aria-pressed", on ? "true" : "false");
+          cpaEls.bmBtn.textContent = on ? "🔖 ブックマーク中" : "🔖 ブックマーク";
+        }
+        if(cpaEls.exclBtn){
+          cpaEls.exclBtn.disabled = !has;
+          var ex = has && !!cpaExtra.excluded[q.id];
+          cpaEls.exclBtn.classList.toggle("active", ex);
+          cpaEls.exclBtn.setAttribute("aria-pressed", ex ? "true" : "false");
+          cpaEls.exclBtn.textContent = ex ? "出題除外中（タップで戻す）" : "出題除外";
+        }
+        if(cpaEls.memoBtn){
+          cpaEls.memoBtn.disabled = !has;
+          var hasMemo = has && !!cpaExtra.memos[q.id];
+          cpaEls.memoBtn.classList.toggle("active", hasMemo);
+          cpaEls.memoBtn.textContent = hasMemo ? "📝 メモあり" : "📝 メモ";
+        }
+        // 直近3回（古い順→新しい順、記録が無い枠は —）
+        if(cpaEls.recent){
+          var slots = cpaEls.recent.querySelectorAll(".cpa-slot");
+          var hist = has ? (cpaExtra.history[q.id] || []) : [];
+          var last3 = hist.slice(-3);
+          for(var s=0;s<slots.length;s++){
+            var idxIn = s - (3 - last3.length);
+            var val = (idxIn>=0 && idxIn<last3.length) ? last3[idxIn] : null;
+            slots[s].textContent = (val==="o") ? "○" : ((val==="x") ? "×" : "—");
+            slots[s].classList.toggle("o", val==="o");
+            slots[s].classList.toggle("x", val==="x");
+          }
+        }
+        // 採点直後ならスタンプ演出（大きなバッジ＋カードの色味変更）
+        if(cpaPendingStamp){
+          var st = cpaPendingStamp;
+          cpaPendingStamp = null;
+          cpaShowStamp(st.result);
+        }
+      }
+
+      // ブックマーク ON/OFF
+      if(cpaEls.bmBtn) cpaEls.bmBtn.addEventListener("click", function(){
+        var q = currentQ();
+        if(!q) return;
+        if(cpaExtra.bookmarks[q.id]) delete cpaExtra.bookmarks[q.id];
+        else cpaExtra.bookmarks[q.id] = true;
+        cpaSaveExtra();
+        if(cpaBmOnly && !cpaExtra.bookmarks[q.id]) buildDeck(null);
+        else render();
+      });
+      // 出題除外 ON/OFF
+      if(cpaEls.exclBtn) cpaEls.exclBtn.addEventListener("click", function(){
+        var q = currentQ();
+        if(!q) return;
+        if(cpaExtra.excluded[q.id]) delete cpaExtra.excluded[q.id];
+        else cpaExtra.excluded[q.id] = true;
+        cpaSaveExtra();
+        if(!cpaInclExcl) buildDeck(null);
+        else render();
+      });
+      // 絞り込み：「ブックマークのみ」
+      if(cpaEls.bmOnlyChip) cpaEls.bmOnlyChip.addEventListener("click", function(){
+        cpaBmOnly = !cpaBmOnly;
+        dueMode = false;
+        jumpTargetId = null;
+        idx = 0;
+        answerShown = false;
+        buildDeck(null);
+      });
+      // 絞り込み：「除外を含める」
+      if(cpaEls.inclExclChip) cpaEls.inclExclChip.addEventListener("click", function(){
+        cpaInclExcl = !cpaInclExcl;
+        jumpTargetId = null;
+        var cur = currentQ();
+        buildDeck(cur ? cur.id : null);
+      });
+      // メモ（モーダルで編集・保存）
+      function cpaOpenMemo(){
+        var q = currentQ();
+        if(!q) return;
+        cpaMemoTargetId = q.id;
+        cpaEls.memoQ.textContent = q.chapterShort + " ・ " + q.question;
+        cpaEls.memoText.value = cpaExtra.memos[q.id] || "";
+        cpaEls.modal.classList.add("show");
+        try{ cpaEls.memoText.focus(); }catch(e){}
+      }
+      function cpaCloseMemo(){
+        cpaEls.modal.classList.remove("show");
+        cpaMemoTargetId = null;
+      }
+      if(cpaEls.memoBtn) cpaEls.memoBtn.addEventListener("click", cpaOpenMemo);
+      if(cpaEls.memoCancel) cpaEls.memoCancel.addEventListener("click", cpaCloseMemo);
+      if(cpaEls.modal) cpaEls.modal.addEventListener("click", function(e){
+        if(e.target===cpaEls.modal) cpaCloseMemo();
+      });
+      if(cpaEls.memoSave) cpaEls.memoSave.addEventListener("click", function(){
+        if(!cpaMemoTargetId) return;
+        var v = cpaEls.memoText.value.replace(/^\s+|\s+$/g, "");
+        if(v) cpaExtra.memos[cpaMemoTargetId] = v;
+        else delete cpaExtra.memos[cpaMemoTargetId];
+        cpaSaveExtra();
+        cpaCloseMemo();
+        render();
+      });
+
+      // 初期表示へ反映（保存済みの除外などがある場合に備え、デッキを作り直す）
+      buildDeck(currentQ() ? currentQ().id : null);
+    </script>
+
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
